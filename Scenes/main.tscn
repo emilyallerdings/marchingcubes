@@ -1,0 +1,73 @@
+[gd_scene load_steps=11 format=3 uid="uid://cxt5dddn7782i"]
+
+[ext_resource type="Script" uid="uid://c0fnchhwdkpdo" path="res://Scripts/main.gd" id="1_8gbba"]
+[ext_resource type="Script" uid="uid://bi5i64usntng7" path="res://Scripts/FreeLookCamera/FreeLookCameraBase.cs" id="2_jjvhh"]
+[ext_resource type="Script" uid="uid://cv26ciw0l064f" path="res://Scripts/TerrainGenerator.cs" id="3_8gbba"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5gw7f"]
+
+[sub_resource type="Sky" id="Sky_buc7y"]
+sky_material = SubResource("ProceduralSkyMaterial_5gw7f")
+
+[sub_resource type="Environment" id="Environment_ejojq"]
+background_mode = 2
+sky = SubResource("Sky_buc7y")
+fog_mode = 1
+fog_light_color = Color(1, 1, 1, 1)
+fog_density = 1.0
+fog_depth_begin = 200.0
+fog_depth_end = 220.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_h2yge"]
+font_size = 48
+outline_size = 16
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="GDScript" id="GDScript_h2yge"]
+script/source = "extends Label
+
+func _process(delta: float) -> void:
+	text = \"FPS: \" + str(Engine.get_frames_per_second())
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8gbba"]
+noise_type = 3
+frequency = 0.0237
+fractal_type = 0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8gbba"]
+size = Vector3(20, 20, 20)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_8gbba")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-0.99989, -0.0101365, 0.010909, 0, 0.732568, 0.680694, -0.0148915, 0.680619, -0.732487, 10, 10, 10)
+current = true
+script = ExtResource("2_jjvhh")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ejojq")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="UI"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "FPS: "
+label_settings = SubResource("LabelSettings_h2yge")
+script = SubResource("GDScript_h2yge")
+
+[node name="TerrainGen" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_8gbba")
+noise = SubResource("FastNoiseLite_8gbba")
+
+[node name="ChunkDebug" type="Area3D" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="CollShape" type="CollisionShape3D" parent="ChunkDebug"]
+shape = SubResource("BoxShape3D_8gbba")
+debug_color = Color(0.919295, 0.281978, 0.0666271, 1)
